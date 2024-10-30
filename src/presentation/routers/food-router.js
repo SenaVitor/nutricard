@@ -5,22 +5,24 @@ const { MissingParamError, InvalidParamError } = require('../../utils/errors')
 module.exports = class FoodRouter {
   async route (httpRequest) {
     try {
-      const {apiKey, foodId} = httpRequest.body;
+      const {apiKey, query} = httpRequest.body;
       if (!apiKey) {
         return HttpResponse.badRequest(new MissingParamError('apiKey'));
       }
-      if (!foodId) {
-        return HttpResponse.badRequest(new MissingParamError('foodId'));
+      if (!query) {
+        return HttpResponse.badRequest(new MissingParamError('query'));
       }
-      this.getIngredientInfo(apiKey, foodId);
+      this.getIngredientInfo(apiKey, query);
     } catch (error) {
       return HttpResponse.serverError();
     }
   }
 
-  async getIngredientInfo(apiKey, foodId) {
+  async getIngredientInfo(apiKey, query) {
     try {
-      const url = 'https://api.spoonacular.com/food/ingredients/' + foodId + '/information';
+      const number = 10;
+      const url = 'https://api.spoonacular.com/food/ingredients/autocomplete?query=' + query + '&number=' + number;
+      console.log(url);
       const response = await axios.get(url, {
         params: {
           amount: 1,

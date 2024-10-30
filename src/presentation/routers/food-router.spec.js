@@ -14,7 +14,7 @@ describe('API Router', () => {
     const { sut } = makeSut()
     const httpRequest = {
       body: {
-        foodId: 'any_foodId'
+        query: 'any_query'
       }
     }
     const httpResponse = await sut.route(httpRequest)
@@ -22,7 +22,7 @@ describe('API Router', () => {
     expect(httpResponse.body).toEqual(new MissingParamError('apiKey'))
   });
 
-  test('Should return 400 if no foodId is provided', async () => {
+  test('Should return 400 if no query is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
       body: {
@@ -31,7 +31,7 @@ describe('API Router', () => {
     }
     const httpResponse = await sut.route(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new MissingParamError('foodId'))
+    expect(httpResponse.body).toEqual(new MissingParamError('query'))
   });
 
   test('Should return 500 if no httpRequest is provided', async () => {
@@ -53,7 +53,7 @@ describe('API Router', () => {
     const httpRequest = {
       body: {
         apiKey: 'valid_apiKey',
-        foodId: 'valid_foodId'
+        query: 'valid_query'
       }
     }
     const httpResponse = await sut.route(httpRequest);
