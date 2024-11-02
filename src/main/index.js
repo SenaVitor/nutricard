@@ -1,5 +1,5 @@
 const FoodRouter = require('../presentation/routers/food-router');
-const app = require('express')();
+const app = require('./config/app');
 
 app.listen(3000, () => console.log('Server running'));
 
