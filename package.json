@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "axios": "^1.7.7",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "fast-glob": "^3.3.2"
   }
 }
