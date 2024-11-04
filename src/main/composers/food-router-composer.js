@@ -1,5 +1,7 @@
 const FoodRouter = require('../../presentation/routers/food-router');
 
-const foodRouter = new FoodRouter();
-
-module.exports = foodRouter;
+module.exports = class FoodRouterComposer {
+    static compose() {
+        return new FoodRouter();
+    }
+}

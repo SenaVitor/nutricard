@@ -1,6 +1,6 @@
-const foodRouter = require('../composers/food-router-composer');
-const ExpressRouterAdapter = require('../adapters/express-router-adapter');
+const FoodRouterComposer = require('../composers/food-router-composer');
+const { adapt } = require('../adapters/express-router-adapter');
 
 module.exports = router => {
-    router.get('/food', ExpressRouterAdapter.adapt(foodRouter));
+    router.get('/food', adapt(FoodRouterComposer.compose()));
 }
