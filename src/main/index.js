@@ -1,7 +1,8 @@
 const FoodRouter = require('../presentation/routers/food-router');
+const env = require('./config/env');
 const app = require('./config/app');
 
-app.listen(3000, () => console.log('Server running'));
+app.listen(env.port, () => console.log(`Server running at http://localhost:${env.port}`));
 
 const foodRouter = new FoodRouter();
 const httpRequest = {
