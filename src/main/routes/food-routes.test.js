@@ -11,4 +11,14 @@ describe('Food Routes', () => {
             })
             .expect(200);
     });
+    
+    test('Should return 401 when invalid credentials are provided', async () => {
+        await request(app)
+            .get('/api/food')
+            .send({
+                query: 'rice',
+                numberOfResults: null
+            })
+            .expect(401);
+    });
 });
