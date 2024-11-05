@@ -20,6 +20,7 @@ module.exports = class FoodRouter {
       }
       return this.getIngredientInfo(query, numberOfResults);
     } catch (error) {
+      console.error(`Erro: ${error}`);
       return HttpResponse.serverError();
     }
   }

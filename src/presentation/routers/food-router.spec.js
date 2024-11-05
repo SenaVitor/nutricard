@@ -1,7 +1,6 @@
 const FoodRouter = require('./food-router');
 const { MissingParamError, InvalidParamError } = require('../../utils/errors');
 const { ServerError } = require('../errors');
-const { apiKey } = require('../../main/config/env');
 
 describe('Food Router', () => {
   const makeSut = () => {
