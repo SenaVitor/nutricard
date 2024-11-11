@@ -1,12 +1,13 @@
 CREATE TABLE user_data (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    mail VARCHAR(50) NOT NULL,
+    mail VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(30) NOT NULL,
     height REAL NOT NULL,
     weight REAL NOT NULL,
     calorie_goal REAL,
     calories_consumed REAL,
+	bmi REAL,
     CHECK (weight > 0),
     CHECK (height > 0)
 );

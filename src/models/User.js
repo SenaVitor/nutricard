@@ -16,7 +16,8 @@ class User {
 
     static getUsers = async () => {
         try{
-            const dbQuery = `select * from user_data`
+            const dbQuery = `select user_id, name, mail, height, weight, calorie_goal, calories_consumed, bmi  
+                from user_data`
             const users = await db.query(dbQuery);
             return users.rows;
         }catch(e) {
@@ -26,11 +27,23 @@ class User {
 
     static getUserById = async (id) => {
         try{
-            const dbQuery = `select * from user_data where user_id  = ${id}`
+            const dbQuery = `select user_id, name, mail, height, weight, calorie_goal, calories_consumed, bmi
+                from user_data where user_id  = ${id}`
             const user = await db.query(dbQuery);
             return user.rows;
         }catch(e) {
             console.error("Usuário não cadastrado " + e);
+        }
+    }
+
+    static login = async (mail, password) => {
+        try{
+            const dbQuery = `select user_id, name, mail, height, weight, calorie_goal, calories_consumed, bmi 
+                from user_data where mail = $1 and password = $2`
+            const user = await db.query(dbQuery, [mail, password]);
+            return user.rows.length > 0 ? user.rows : "Email ou Senha Incorretos!";
+        }catch(e) {
+            console.error("Erro ao realizar login", e);
         }
     }
 
