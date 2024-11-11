@@ -49,3 +49,19 @@ CREATE TABLE favorite_meals (
     FOREIGN KEY (meal_id) REFERENCES meal (meal_id),
     FOREIGN KEY (user_id) REFERENCES user_data (user_id)
 );
+
+INSERT INTO user_data (name, mail, password, height, weight, calorie_goal, calories_consumed)
+VALUES 
+    ('Alice Smith', 'alice.smith@example.com', 'securePass123', 1.65, 60.5, 2000, 1500),
+    ('Bob Johnson', 'bob.johnson@example.com', 'bobPassword456', 1.80, 75.0, 2200, 1800),
+    ('Carol Williams', 'carol.williams@example.com', 'carol789', 1.70, 68.0, 1800, 1600);
+
+insert into user_data (name, mail, password, height, weight, 
+	calorie_goal, calories_consumed) values (
+	'name', 'mail', 'password', 163, 80, 
+	2000, 1000
+);
+
+select * from user_data;	
+select * from food;
+delete from user_data;

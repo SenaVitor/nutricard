@@ -16,7 +16,7 @@ class Food {
     
     static getFood = async (query, number) => {
         try{
-            const dbQuery = `select * from food where name like %${query}% limit ${number}`
+            const dbQuery = `select * from food where name like '%${query}%' limit ${number}`
             const food = await db.query(dbQuery);
             console.log("food " + food);
             return food.rows;
@@ -25,20 +25,22 @@ class Food {
         }
     }
 
-    async insert(food){
+    static insert = async (food) => {
         const dbQuery = `
             insert into food 
                 (name, unit_of_measure, image, calories, fat, saturated_fat, carbohydrates, sugar, sodium, fiber) 
             values 
-                (${food.name}, ${food.unit_of_measure}, ${food.image}, ${getNutrient(food, "Calories")}, ${getNutrient(food, "Fat")}, ${getNutrient(food, "Saturated Fat")}, 
-                ${getNutrient(food, "Carbohydrates")}, ${getNutrient(food, "Sugar")}, ${getNutrient(food, "Sodium")}, ${getNutrient(food, "Fiber")})
+                ('${food.name}', '${food.unit_of_measure}', '${food.image}', ${this.getNutrient(food, "Calories")}, 
+                ${this.getNutrient(food, "Fat")}, ${this.getNutrient(food, "Saturated Fat")}, 
+                ${this.getNutrient(food, "Carbohydrates")}, ${this.getNutrient(food, "Sugar")}, 
+                ${this.getNutrient(food, "Sodium")}, ${this.getNutrient(food, "Fiber")})
         `;
-        const result = await db.query(dbQuery);
-        return result;
+        await db.query(dbQuery);
+        return 'Alimento criado com sucesso!';
     }
 
-    getNutrient(food, name){
-        return food.nutrition.nutrients.find(nutrient => nutrient.name === name);
+    static getNutrient = (food, name) => {
+        return food.nutrition.nutrients.find(nutrient => nutrient.name === name).amount;
     }
 }
 
