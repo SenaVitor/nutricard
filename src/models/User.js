@@ -49,7 +49,6 @@ class User {
 
     static insert = async (user) => {
         try{
-            await db.connect();
             const dbQuery = `
                 insert into user_data 
                     (name, mail, password, height, weight, calorie_goal, calories_consumed)

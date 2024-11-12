@@ -1,6 +1,6 @@
 import pg from "pg";
 import env from "./env.js";
 
-const client = new pg.Client(env.dbClient);
+const pool = new pg.Pool(env.pool);
 
-export default client;
+export default pool;
