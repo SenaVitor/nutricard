@@ -8,6 +8,7 @@ CREATE TABLE user_data (
     calorie_goal REAL,
     calories_consumed REAL,
 	bmi REAL,
+	bmiCategory VARCHAR(30),
     CHECK (weight > 0),
     CHECK (height > 0)
 );
@@ -66,3 +67,5 @@ insert into user_data (name, mail, password, height, weight,
 select * from user_data;	
 select * from food;
 delete from user_data;
+delete from food;
+

@@ -49,17 +49,35 @@ class User {
 
     static insert = async (user) => {
         try{
+            user.bmi = user.bmi || (user.weight / (user.height * user.height));
+            const bmiCategory = getCategory(bmi);
             const dbQuery = `
                 insert into user_data 
-                    (name, mail, password, height, weight, calorie_goal, calories_consumed)
+                    (name, mail, password, height, weight, calorie_goal, calories_consumed, bmi, bmiCategory)
                 values 
-                    ('${user.name}', '${user.mail}', '${user.password}', ${user.height}, 
-                    ${user.weight}, ${user.calorie_goal}, ${user.calories_consumed})
+                    ('${user.name}', '${user.mail}', '${user.password}', ${user.height}, ${user.weight}, 
+                    ${user.calorie_goal}, ${user.calories_consumed}, ${user.bmi}, ${bmiCategory})
             `;
             await db.query(dbQuery);
             return 'Usuário criado com sucesso!';
         }catch(error) {
             console.error("Erro ao adicionar novo usuário " + error);
+        }
+    }
+
+    static getCategory(bmi){
+        if(bmi <= 18.5){
+            return "Abaixo do peso";
+        }else if(bmi <= 24.9){
+            return "Peso ideal";
+        }else if(bmi <= 29.9){
+            return "Sobrepeso";
+        }else if(bmi <= 34.9){
+            return "Obesidade grau I";
+        }else if(bmi <= 39.9){
+            return "Obesidade grau II";
+        }else{
+            return "Obesidade mórbida";
         }
     }
 }
