@@ -52,6 +52,15 @@ CREATE TABLE favorite_meals (
     FOREIGN KEY (user_id) REFERENCES user_data (user_id)
 );
 
+CREATE TABLE favorite_food (
+    user_id INT NOT NULL,
+    food_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user_data(user_id),
+    FOREIGN KEY (food_id) REFERENCES food(food_id),
+    UNIQUE (user_id, food_id)  -- Evita duplicação de favoritos
+);
+
+
 INSERT INTO user_data (name, mail, password, height, weight, calorie_goal, calories_consumed)
 VALUES 
     ('Alice Smith', 'alice.smith@example.com', 'securePass123', 1.65, 60.5, 2000, 1500),
