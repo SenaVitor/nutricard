@@ -49,14 +49,18 @@ class User {
 
     static insert = async (user) => {
         try{
+            console.log(JSON.stringify(user));
             user.bmi = user.bmi || (user.weight / (user.height * user.height));
-            const bmiCategory = getCategory(bmi);
+            if(!user.calories_consumed) user.calories_consumed = 0;
+            if(!user.calorie_goal) user.calorie_goal = 2000;
+            // const bmiCategory = this.getCategory(user.bmi);
+            const bmiCategory = "teste";
             const dbQuery = `
                 insert into user_data 
                     (name, mail, password, height, weight, calorie_goal, calories_consumed, bmi, bmiCategory)
                 values 
                     ('${user.name}', '${user.mail}', '${user.password}', ${user.height}, ${user.weight}, 
-                    ${user.calorie_goal}, ${user.calories_consumed}, ${user.bmi}, ${bmiCategory})
+                    ${user.calorie_goal}, ${user.calories_consumed}, ${user.bmi}, '${bmiCategory}')
             `;
             await db.query(dbQuery);
             return 'Usuário criado com sucesso!';

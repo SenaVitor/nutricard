@@ -3,7 +3,7 @@ import env from "../config/env.js";
 
 class UserController {
     static login = async (req, res) => {
-        const { mail, password } = req.query;
+        const { mail, password } = req.body;
         
         if (!mail) {
             return res.status(400).json({ message: "Insira um email!" });
@@ -22,7 +22,7 @@ class UserController {
     }
 
     static register = async (req, res) => {
-        const { user } = req.query;
+        const { user } = req.body;
 
         if (!user) {
             return res.status(400).json({ message: "O parâmetro 'user' é obrigatório." });
@@ -32,7 +32,7 @@ class UserController {
         if (result) {
             res.status(200).json(result);
         } else {
-            res.status(500).json({ message: "Erro ao cadastrar usuário" });
+            res.status(500).json({ message: "Erro ao cadastrar usuário" + result });
         }
     }
 
