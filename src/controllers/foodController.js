@@ -25,22 +25,19 @@ class FoodController {
 
     static listFood = async (req, res) => {
         let result;
-        const { query, number = 1 } = req.query;  // `number` será 1 por padrão se não for fornecido
+        const { query, sort, sortDirection, number = 1 } = req.query;  // `number` será 1 por padrão se não for fornecido
         
-        if (!query) {
-            return res.status(400).json({ message: "O parâmetro 'query' é obrigatório." });
+        const params = {
+            query: query,
+            sort: sort, 
+            sortDirection: sortDirection,
+            number: number,
+            apiKey: env.apiKey
         }
 
-        result = await Food.getFood(query, number);
+        result = await Food.getFood(params);
         console.log("Result ", JSON.stringify(result));
-        if(result.length < number){
-            const params = {
-                query: query,
-                number: number,
-                // offset: result.length,
-                apiKey: env.apiKey
-            }
-            
+        if(result && result.length < number){
             const url = `https://api.spoonacular.com/food/ingredients/search`;
             const foods = await this.callApi(url, params);
             const dbFoods = await this.insert(result, foods);
@@ -63,7 +60,7 @@ class FoodController {
         }
 
         try {
-            const detailedFoods = await this.fetchDetailedFoods([id]);
+            const detailedFoods = await this.fetchDetailedFoods([id], amount);
 
             if (detailedFoods && detailedFoods.length > 0) {
                 res.status(200).json(detailedFoods[0]);
@@ -75,11 +72,11 @@ class FoodController {
         }
     }
 
-    static fetchDetailedFoods = async (foodIds) => {
+    static fetchDetailedFoods = async (foodIds, amount) => {
         try {
             const detailedFoods = await Promise.all(
                 foodIds.map(async (id) => {
-                    const params = { amount: 1, apiKey: env.apiKey };
+                    const params = { amount: amount, apiKey: env.apiKey };
                     const url = `https://api.spoonacular.com/food/ingredients/${id}/information`;
                     return await this.callApi(url, params);
                 })
@@ -97,7 +94,7 @@ class FoodController {
                 .filter(food => !dataBaseFoods.some(dbFood => dbFood.food_id === food.id))
                 .map(food => food.id);
             console.log(foodIds);
-            const detailedFoods = await this.fetchDetailedFoods(foodIds);
+            const detailedFoods = await this.fetchDetailedFoods(foodIds, 1);
             await Promise.all(
                 detailedFoods.map(async (food) => await Food.insert(food))
             );

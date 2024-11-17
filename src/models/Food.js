@@ -14,9 +14,13 @@ class Food {
         this.fiber = fiber;
     }
     
-    static getFood = async (query, number) => {
+    static getFood = async (params) => {
         try{
-            const dbQuery = `select * from food where name like '%${query}%' limit ${number}`
+            let dbQuery = `select * from food where name like '%${params.query}%'`; 
+            if(params.sort) dbQuery += ` order by ${params.sort}`;
+            if(params.sortDirection) dbQuery += ` ${params.sortDirection}`;
+            dbQuery += ` limit ${params.number}`;
+            console.log(dbQuery)
             const food = await db.query(dbQuery);
             // console.log("food " + JSON.stringify(food));
             return food.rows;
