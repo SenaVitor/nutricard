@@ -33,6 +33,7 @@ class User {
             return user.rows;
         }catch(e) {
             console.error("Usuário não cadastrado " + e);
+            throw new Error("Erro ao buscar usuário!");
         }
     }
 

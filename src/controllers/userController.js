@@ -36,6 +36,25 @@ class UserController {
         }
     }
 
+    static listUser = async (req, res) => {
+        const { id } = req.params;
+        
+        if (isNaN(id)) {
+            return res.status(400).json({ message: "Id deve ser um número." });
+        }
+        
+        try {
+            const result = await User.getUserById(id);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(400).json({ message: "Usuário não cadastrado!" });
+            }
+        } catch (error) {
+            res.status(500).json({message: error.message});
+        }
+    }
+
 }
 
 export default UserController
