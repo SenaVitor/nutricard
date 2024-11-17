@@ -5,6 +5,6 @@ const router = express.Router();
 
 router
     .get("/food", FoodController.listFood)
-    .get("/food/name", FoodController.listFoodByName)
+    .get("/food/:id", FoodController.listFoodById)
 
 export default router;

@@ -18,7 +18,7 @@ class Food {
         try{
             const dbQuery = `select * from food where name like '%${query}%' limit ${number}`
             const food = await db.query(dbQuery);
-            console.log("food " + food);
+            // console.log("food " + JSON.stringify(food));
             return food.rows;
         }catch(e) {
             console.error("Erro " + e);
@@ -28,19 +28,37 @@ class Food {
     static insert = async (food) => {
         const dbQuery = `
             insert into food 
-                (name, unit_of_measure, image, calories, fat, saturated_fat, carbohydrates, sugar, sodium, fiber) 
+                (food_id, name, unit_of_measure, image, calories, fat, saturated_fat, carbohydrates, sugar, sodium, fiber) 
             values 
-                ('${food.name}', '${food.unit_of_measure}', '${food.image}', ${this.getNutrient(food, "Calories")}, 
-                ${this.getNutrient(food, "Fat")}, ${this.getNutrient(food, "Saturated Fat")}, 
-                ${this.getNutrient(food, "Carbohydrates")}, ${this.getNutrient(food, "Sugar")}, 
-                ${this.getNutrient(food, "Sodium")}, ${this.getNutrient(food, "Fiber")})
+                (${food.id}, '${food.name}', '${food.nutrition.weightPerServing.unit}', '${food.image}', 
+                ${this.getNutrient(food, "Calories")}, ${this.getNutrient(food, "Fat")}, 
+                ${this.getNutrient(food, "Saturated Fat")}, ${this.getNutrient(food, "Carbohydrates")}, 
+                ${this.getNutrient(food, "Sugar")}, ${this.getNutrient(food, "Sodium")}, 
+                ${this.getNutrient(food, "Fiber")})
         `;
         await db.query(dbQuery);
         return 'Alimento criado com sucesso!';
     }
+    
+    static getFoodsByIds = async (ids) => {
+        try{
+            const dbQuery = `select * from food where food_id = ANY($1::int[]);
+            `;
+            const food = await db.query(dbQuery, [ids]);
+            // console.log("food " + JSON.stringify(food));
+            return food.rows;
+        }catch(e) {
+            console.error("Erro " + e);
+        }
+    }
 
     static getNutrient = (food, name) => {
-        return food.nutrition.nutrients.find(nutrient => nutrient.name === name).amount;
+        try{
+            return food.nutrition.nutrients.find(nutrient => nutrient.name === name).amount;
+        }catch(error){
+            console.error(`Erro ao acessar o nutriente ${name} do alimento ${food.name}: ${error}`);
+            return 0;
+        }
     }
 }
 
