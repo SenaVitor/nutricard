@@ -41,7 +41,7 @@ class User {
             const dbQuery = `select user_id, name, mail, height, weight, calorie_goal, calories_consumed, bmi 
                 from user_data where mail = $1 and password = $2`
             const user = await db.query(dbQuery, [mail, password]);
-            return user.rows.length > 0 ? user.rows : "Email ou Senha Incorretos!";
+            return user.rows.length > 0 ? user.rows : null;
         }catch(e) {
             console.error("Erro ao realizar login", e);
         }
