@@ -18,13 +18,12 @@ CREATE TABLE food (
     name VARCHAR(30) NOT NULL,
     unit_of_measure VARCHAR(10) NOT NULL,
     image VARCHAR(100),
-    calories REAL,
-    fat REAL,
-    saturated_fat REAL,
-    carbohydrates REAL,
-    sugar REAL,
-    sodium REAL,
-    fiber REAL
+    calories REAL NOT NULL,
+    fat REAL NOT NULL,
+    carbohydrates REAL NOT NULL,
+    sodium REAL NOT NULL,
+    fiber REAL NOT NULL,
+	protein REAL NOT NULL
 );
 
 CREATE TABLE meal (
@@ -78,3 +77,7 @@ select * from food;
 delete from user_data;
 delete from food;
 
+select * from food where name like '%app%' limit 5
+
+select * from food where name like '%%' 
+	order by food_id limit 10

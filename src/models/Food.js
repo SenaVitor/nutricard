@@ -1,17 +1,16 @@
 import db from "../config/db.js";
 
 class Food {
-    constructor(name, unit_of_measure, image, calories, fat, saturated_fat, carbohydrates, sugar, sodium, fiber) {
+    constructor(name, unit_of_measure, image, calories, fat, carbohydrates, sodium, fiber, protein) {
         this.name = name;
         this.unit_of_measure = unit_of_measure;
         this.image = image;
         this.calories = calories;
         this.fat = fat;
-        this.saturated_fat = saturated_fat;
         this.carbohydrates = carbohydrates;
-        this.sugar = sugar;
         this.sodium = sodium;
         this.fiber = fiber;
+        this.protein = protein;
     }
     
     static getFood = async (params) => {
@@ -32,13 +31,12 @@ class Food {
     static insert = async (food) => {
         const dbQuery = `
             insert into food 
-                (food_id, name, unit_of_measure, image, calories, fat, saturated_fat, carbohydrates, sugar, sodium, fiber) 
+                (food_id, name, unit_of_measure, image, calories, fat, carbohydrates, sodium, fiber, protein) 
             values 
                 (${food.id}, '${food.name}', '${food.nutrition.weightPerServing.unit}', '${food.image}', 
                 ${this.getNutrient(food, "Calories")}, ${this.getNutrient(food, "Fat")}, 
-                ${this.getNutrient(food, "Saturated Fat")}, ${this.getNutrient(food, "Carbohydrates")}, 
-                ${this.getNutrient(food, "Sugar")}, ${this.getNutrient(food, "Sodium")}, 
-                ${this.getNutrient(food, "Fiber")})
+                ${this.getNutrient(food, "Carbohydrates")}, ${this.getNutrient(food, "Sodium")}, 
+                ${this.getNutrient(food, "Fiber")}, ${this.getNutrient(food, "Protein")})
         `;
         await db.query(dbQuery);
         return 'Alimento criado com sucesso!';
