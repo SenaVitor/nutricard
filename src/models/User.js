@@ -53,9 +53,10 @@ class User {
             console.log(JSON.stringify(user));
             user.bmi = user.bmi || (user.weight / (user.height * user.height));
             if(!user.calories_consumed) user.calories_consumed = 0;
-            if(!user.calorie_goal) user.calorie_goal = 2000;
-            // const bmiCategory = this.getCategory(user.bmi);
-            const bmiCategory = "teste";
+            if(!user.calorie_goal) user.calorie_goal = getCalorieGoal(user);
+            const bmiCategory = this.getCategory(user.bmi);
+            console.log("user ", JSON.stringify(user));
+            // const bmiCategory = "teste";
             const dbQuery = `
                 insert into user_data 
                     (name, mail, password, height, weight, calorie_goal, calories_consumed, bmi, bmiCategory)
@@ -68,6 +69,17 @@ class User {
         }catch(error) {
             console.error("Erro ao adicionar novo usuário " + error);
         }
+    }
+
+    static getCalorieGoal(user){
+        let calorieGoal; 
+        if(user.gender === "man"){
+            calorieGoal = (13.75 * user.weight) + (500 * user.height) - (6.76 * user.age) + 66,5;
+        }else{
+            calorieGoal = (9.56 * user.weight) + (185 * user.height) - (4.68 * user.age) + 665;
+        }
+
+        return calorieGoal;
     }
 
     static getCategory(bmi){

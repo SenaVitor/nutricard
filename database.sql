@@ -5,6 +5,7 @@ CREATE TABLE user_data (
     password VARCHAR(30) NOT NULL,
     height REAL NOT NULL,
     weight REAL NOT NULL,
+	gender VARCHAR(5) NOT NULL;
     calorie_goal REAL,
     calories_consumed REAL,
 	bmi REAL,
