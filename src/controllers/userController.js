@@ -54,6 +54,21 @@ class UserController {
             res.status(500).json({message: error.message});
         }
     }
+    
+    static update = async (req, res) => {
+        const { user } = req.body;
+
+        if (!user) {
+            return res.status(400).json({ message: "O parâmetro 'user' é obrigatório." });
+        }
+        
+        const result = await User.update(user);
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(500).json({ message: "Erro ao atualizar usuário" + result });
+        }
+    }
 
 }
 
