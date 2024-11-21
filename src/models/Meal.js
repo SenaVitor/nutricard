@@ -8,15 +8,17 @@ class Meal {
         this.user_id = user_id;
     }
     
-    static getMeal = async (user_id, date) => {
+    static getMeal = async (user_id, start_date, end_date) => {
         try{
-            if (!user_id || !date) {
-                return res.status(400).json({ message: "Os parâmetros 'user_id' e 'date' são obrigatórios." });
+            if (!user_id || !start_date || !end_date) {
+                return res.status(400).json({ message: 
+                    "Os parâmetros 'user_id', 'start_date' e 'end_date' são obrigatórios." });
             }
-            const dbQuery = `select * from meal where user_id = '${user_id}' and start_date = ${date}`;
+            const dbQuery = `select * from meal where user_id = '${user_id}' and start_date >= '${start_date}' 
+                and end_date <= '${end_date}'`;
             console.log(dbQuery);
             const meal = await db.query(dbQuery);
-            return food.rows;
+            return meal.rows;
         }catch(e) {
             console.error("Erro " + e);
         }
