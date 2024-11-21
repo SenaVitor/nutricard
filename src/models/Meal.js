@@ -11,9 +11,9 @@ class Meal {
     static getMeal = async (user_id, date) => {
         try{
             if (!user_id || !date) {
-                return res.status(400).json({ message: "Os parâmetros 'userId' e 'date' são obrigatórios." });
+                return res.status(400).json({ message: "Os parâmetros 'user_id' e 'date' são obrigatórios." });
             }
-            const dbQuery = `select * from meal where user_id = '${user_id}' and date = ${date}`;
+            const dbQuery = `select * from meal where user_id = '${user_id}' and start_date = ${date}`;
             console.log(dbQuery);
             const meal = await db.query(dbQuery);
             return food.rows;
@@ -25,9 +25,9 @@ class Meal {
     static create = async (meal) => {
         try{
             let dbQuery = `
-                insert into meal (name, date, user_id) values ($1, $2, $3) returning meal_id
+                insert into meal (name, start_date, end_date, user_id) values ($1, $2, $3) returning meal_id
             `;
-            const values = [meal.name, meal.date, meal.user_id];
+            const values = [meal.name, meal.start_date, meal.end_date, meal.user_id];
             const { rows } = await db.query(dbQuery, values);
             const meal_id = rows[0].meal_id;
             dbQuery = `

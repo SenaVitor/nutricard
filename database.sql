@@ -30,7 +30,8 @@ CREATE TABLE food (
 CREATE TABLE meal (
     meal_id SERIAL PRIMARY KEY,
     name VARCHAR(15) NOT NULL,
-    date DATE NOT NULL,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
     user_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user_data (user_id)
 );
