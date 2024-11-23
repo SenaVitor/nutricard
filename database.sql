@@ -33,6 +33,12 @@ CREATE TABLE meal (
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
     user_id INT NOT NULL,
+    calories REAL NOT NULL,
+    fat REAL NOT NULL,
+    carbohydrates REAL NOT NULL,
+    sodium REAL NOT NULL,
+    fiber REAL NOT NULL,
+	protein REAL NOT NULL
     FOREIGN KEY (user_id) REFERENCES user_data (user_id)
 );
 
@@ -76,8 +82,12 @@ insert into user_data (name, mail, password, height, weight,
 
 select * from user_data;	
 select * from food;
+select * from meal;
+select * from meal_food;
 delete from user_data;
 delete from food;
+delete from meal;
+delete from meal_food;
 
 select * from food where name like '%app%' limit 5
 
