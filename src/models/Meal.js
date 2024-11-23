@@ -52,7 +52,6 @@ class Meal {
                 carbohydrates, sodium, fiber, protein
             ];
             const { rows } = await db.query(dbQuery, values);
-            console.log("rows ", rows);
             const meal_id = rows[0].meal_id;
             dbQuery = `
                 insert into meal_food (meal_id, food_id, amount) values ($1, $2, $3)
