@@ -27,6 +27,29 @@ class Food {
             console.error("Erro " + e);
         }
     }
+    
+    static getFoodsByIds = async (ids) => {
+        try{
+            const dbQuery = `select * from food where food_id = ANY($1::int[]);`;
+            const food = await db.query(dbQuery, [ids]);
+            // console.log("food " + JSON.stringify(food));
+            return food.rows;
+        }catch(e) {
+            console.error("Erro " + e);
+        }
+    }
+    
+    static getFoodsByMeal = async (id) => {
+        try{
+            const dbQuery = `select food_id from meal_food where meal_id = $1`;
+            const foodIds = await db.query(dbQuery, [id]);
+            const foods = await this.getFoodsByIds(foodIds.rows.map(row => row.food_id));
+            console.log("foods " + JSON.stringify(foods));
+            return foods;
+        }catch(e) {
+            console.error("Erro " + e);
+        }
+    }
 
     static insert = async (food) => {
         const dbQuery = `
@@ -40,18 +63,6 @@ class Food {
         `;
         await db.query(dbQuery);
         return 'Alimento criado com sucesso!';
-    }
-    
-    static getFoodsByIds = async (ids) => {
-        try{
-            const dbQuery = `select * from food where food_id = ANY($1::int[]);
-            `;
-            const food = await db.query(dbQuery, [ids]);
-            // console.log("food " + JSON.stringify(food));
-            return food.rows;
-        }catch(e) {
-            console.error("Erro " + e);
-        }
     }
 
     static getNutrient = (food, name) => {

@@ -51,6 +51,25 @@ class FoodController {
         }
     }
 
+    static listFoodByMeal = async (req, res) => {
+        const { id } = req.params;
+        
+        if (isNaN(id)) {
+            return res.status(400).json({ message: "Id deve ser um número." });
+        }
+
+        try {
+            const foods = await Food.getFoodsByMeal(id);
+            if (foods && foods.length > 0) {
+                res.status(200).json(foods);
+            } else {
+                res.status(404).json({ message: "Refeição não encontrada" });
+            }
+        } catch (error) {
+            res.status(500).json({ message: "Erro ao buscar alimento pela refeição", error: error.message });
+        }
+    }
+
     static listFoodById = async (req, res) => {
         const { id } = req.params;
         const { amount = 1 } = req.query;
