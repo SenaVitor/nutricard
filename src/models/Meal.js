@@ -16,10 +16,6 @@ class Meal {
     
     static getMeal = async (user_id, start_date, end_date) => {
         try{
-            if (!user_id || !start_date || !end_date) {
-                return res.status(400).json({ message: 
-                    "Os parâmetros 'user_id', 'start_date' e 'end_date' são obrigatórios." });
-            }
             const dbQuery = `select * from meal where user_id = '${user_id}' and start_date >= '${start_date}' 
                 and end_date <= '${end_date}'`;
             console.log(dbQuery);

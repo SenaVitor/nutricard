@@ -2,14 +2,14 @@ import Meal from "../models/Meal.js";
 
 class MealController {
     static listMeal = async (req, res) => {
-        const { user_id, date } = req.params;
+        const { user_id, start_date, end_date } = req.params;
         
         if (isNaN(user_id)) {
             return res.status(400).json({ message: "user_id deve ser um número." });
         }
         
         try {
-            const result = await Meal.getMeal(user_id, date);
+            const result = await Meal.getMeal(user_id, start_date, end_date);
             if (result) {
                 res.status(200).json(result);
             } else {
