@@ -41,10 +41,22 @@ class Food {
     
     static getFoodsByMeal = async (id) => {
         try{
-            const dbQuery = `select food_id from meal_food where meal_id = $1`;
-            const foodIds = await db.query(dbQuery, [id]);
-            const foods = await this.getFoodsByIds(foodIds.rows.map(row => row.food_id));
+            const dbQuery = `select food_id, amount from meal_food where meal_id = $1`;
+            const result = await db.query(dbQuery, [id]);
+            const foods = await this.getFoodsByIds(result.rows.map(row => row.food_id));
             console.log("foods " + JSON.stringify(foods));
+            foods.forEach(food => {
+                const matchingRow = result.rows.find(row => row.food_id === food.food_id);
+                if (matchingRow) {
+                    food.amount = matchingRow.amount;
+                    food.calories *= food.amount;
+                    food.fat *= food.amount; 
+                    food.carbohydrates *= food.amount; 
+                    food.sodium *= food.amount; 
+                    food.fiber *= food.amount;
+                    food.protein *= food.amount;
+                }
+            });
             return foods;
         }catch(e) {
             console.error("Erro " + e);
