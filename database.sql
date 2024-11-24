@@ -1,3 +1,8 @@
+drop table meal;
+drop table meal_food;
+drop table favorite_meals;
+drop table favorite_food;
+
 CREATE TABLE user_data (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -5,7 +10,7 @@ CREATE TABLE user_data (
     password VARCHAR(30) NOT NULL,
     height REAL NOT NULL,
     weight REAL NOT NULL,
-	gender VARCHAR(5) NOT NULL;
+	gender VARCHAR(5) NOT NULL,
     calorie_goal REAL,
     calories_consumed REAL,
 	bmi REAL,
@@ -38,8 +43,8 @@ CREATE TABLE meal (
     carbohydrates REAL NOT NULL,
     sodium REAL NOT NULL,
     fiber REAL NOT NULL,
-	protein REAL NOT NULL
-    FOREIGN KEY (user_id) REFERENCES user_data (user_id)
+	protein REAL NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user_data (user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE meal_food (
@@ -47,37 +52,24 @@ CREATE TABLE meal_food (
     food_id INT NOT NULL,
     amount INT NOT NULL,
     PRIMARY KEY (meal_id, food_id),
-    FOREIGN KEY (meal_id) REFERENCES meal (meal_id),
-    FOREIGN KEY (food_id) REFERENCES food (food_id)
+    FOREIGN KEY (meal_id) REFERENCES meal (meal_id) ON DELETE CASCADE,
+    FOREIGN KEY (food_id) REFERENCES food (food_id) ON DELETE CASCADE
 );
 
 CREATE TABLE favorite_meals (
     meal_id INT NOT NULL,
     user_id INT NOT NULL,
     PRIMARY KEY (meal_id, user_id),
-    FOREIGN KEY (meal_id) REFERENCES meal (meal_id),
-    FOREIGN KEY (user_id) REFERENCES user_data (user_id)
+    FOREIGN KEY (meal_id) REFERENCES meal (meal_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user_data (user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE favorite_food (
     user_id INT NOT NULL,
     food_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user_data(user_id),
-    FOREIGN KEY (food_id) REFERENCES food(food_id),
+    FOREIGN KEY (user_id) REFERENCES user_data(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (food_id) REFERENCES food(food_id) ON DELETE CASCADE,
     UNIQUE (user_id, food_id)  -- Evita duplicação de favoritos
-);
-
-
-INSERT INTO user_data (name, mail, password, height, weight, calorie_goal, calories_consumed)
-VALUES 
-    ('Alice Smith', 'alice.smith@example.com', 'securePass123', 1.65, 60.5, 2000, 1500),
-    ('Bob Johnson', 'bob.johnson@example.com', 'bobPassword456', 1.80, 75.0, 2200, 1800),
-    ('Carol Williams', 'carol.williams@example.com', 'carol789', 1.70, 68.0, 1800, 1600);
-
-insert into user_data (name, mail, password, height, weight, 
-	calorie_goal, calories_consumed) values (
-	'name', 'mail', 'password', 163, 80, 
-	2000, 1000
 );
 
 select * from user_data;	
