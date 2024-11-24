@@ -6,5 +6,8 @@ const router = express.Router();
 router
     .get("/meal/:user_id/:start_date/:end_date", MealController.listMeal)
     .post("/meal/create", MealController.insert)
+    .put("/meal/update", MealController.update)
+    .delete("/meal/:meal_id", MealController.deleteMeal)
+    .delete("/meal/:meal_id/food/:food_id", MealController.deleteFood)
 
 export default router;
