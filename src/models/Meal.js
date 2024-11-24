@@ -30,12 +30,12 @@ class Meal {
         try{
             let calories = 0, fat = 0, carbohydrates = 0, sodium = 0, fiber = 0, protein = 0;
             meal.foods.forEach(food => {
-                calories += food.calories;
-                fat += food.fat;
-                carbohydrates += food.carbohydrates;
-                sodium += food.sodium;
-                fiber += food.fiber;
-                protein += food.protein;
+                calories += Number(food.calories);
+                fat += Number(food.fat);
+                carbohydrates += Number(food.carbohydrates);
+                sodium += Number(food.sodium);
+                fiber += Number(food.fiber);
+                protein += Number(food.protein);
             });
             let dbQuery = `
                 insert into meal 
@@ -62,6 +62,86 @@ class Meal {
             throw new Error("Erro ao cadastrar a refeição.");
         }
     }
+    
+    static update = async (meal) => {
+        try{
+            let calories = 0, fat = 0, carbohydrates = 0, sodium = 0, fiber = 0, protein = 0;
+            meal.foods.forEach(food => {
+                calories += food.calories;
+                fat += food.fat;
+                carbohydrates += food.carbohydrates;
+                sodium += food.sodium;
+                fiber += food.fiber;
+                protein += food.protein;
+            });
+            let dbQuery = `select * from meal where meal_id = '${meal.meal_id}'`;
+            const dbMeal = await db.query(dbQuery);
+            dbQuery = `update meal set `;
+
+            if(meal.name && dbMeal.name !== meal.name) dbQuery += `name = '${meal.name}'`; 
+            if(meal.start_date && dbMeal.start_date !== meal.start_date) dbQuery += `, set start_date = '${meal.start_date}'`;
+            if(meal.end_date && dbMeal.end_date !== meal.end_date) dbQuery += `, end_date = '${meal.end_date}'`; 
+            if(dbMeal.calories !== calories) dbQuery += `, calories = ${calories}`;
+            if(dbMeal.fat !== fat) dbQuery += `, fat = ${fat}`;
+            if(dbMeal.carbohydrates !== carbohydrates) dbQuery += `, carbohydrates = ${carbohydrates}`;
+            if(dbMeal.sodium !== sodium) dbQuery += `, sodium = ${sodium}`;
+            if(dbMeal.fiber !== fiber) dbQuery += `, fiber = ${fiber}`;
+            if(dbMeal.protein !== protein) dbQuery += `, protein = '${protein}'`;
+            
+            dbQuery += ` where meal_id = '${meal.meal_id}'`; 
+
+            await db.query(dbQuery);
+            
+            dbQuery = `update meal_food where meal_id = '${1}' and food_id = ${2} set amount = ${3}`;
+            for(const food of meal.foods) {
+                const foodQuery = `select amount from meal_food where meal_id = ${1} and food_id = '${2}'`;
+                let values = [meal_id, food_id];
+                const foodAmount = await db.query(dbQuery, values);
+                const amount = foodAmount.rows[0].amount;
+                if(food.amound !== amount) {
+                    values = [meal.meal_id, food.food_id, food.amount]
+                    await db.query(dbQuery, values);
+                }
+            };
+            return { meal_id: meal_id, message: "Refeição inserida com sucesso!" };
+        } catch (error) {
+            console.error("Erro ao inserir a refeição:", error);
+            throw new Error("Erro ao cadastrar a refeição.");
+        }
+    }
+    
+    static deleteMeal = async (meal_id) => {
+        try{
+            const dbQuery = `delete from meal where meal_id = $1`;
+            const result = await db.query(dbQuery, [meal_id]);
+            
+            if (result.rowCount === 0) {
+                return false;
+            }
+
+            return true;
+        }catch(e) {
+            console.error("Erro ao deletar refeição" + e);
+            throw new Error("Erro ao deletar refeição.");
+        }
+    }
+
+    static deleteFood = async (meal_id, food_id) => {
+        try{
+            const dbQuery = `delete from meal_food where meal_id = $1 and food_id = $2`;
+            const result = await db.query(dbQuery, [meal_id, food_id]);
+            
+            if (result.rowCount === 0) {
+                return false;
+            }
+
+            return true;
+        }catch(e) {
+            console.error("Erro ao deletar alimento" + e);
+            throw new Error("Erro ao deletar alimento.");
+        }
+    }
+
 }
 
 export default Meal;
