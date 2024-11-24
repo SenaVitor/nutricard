@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import Food from "../models/Food.js";
 
 class Meal {
     constructor(meal_id, name, date, user_id, calories, fat, carbohydrates, sodium, fiber, protein) {
@@ -19,6 +20,16 @@ class Meal {
             const dbQuery = `select * from meal where user_id = '${user_id}' and start_date >= '${start_date}' 
                 and end_date <= '${end_date}'`;
             console.log(dbQuery);
+            const meal = await db.query(dbQuery);
+            return meal.rows;
+        }catch(e) {
+            console.error("Erro " + e);
+        }
+    }
+    
+    static getMealById = async (meal_id) => {
+        try{
+            const dbQuery = `select * from meal where meal_id = '${meal_id}'`;
             const meal = await db.query(dbQuery);
             return meal.rows;
         }catch(e) {
@@ -128,14 +139,39 @@ class Meal {
 
     static deleteFood = async (meal_id, food_id) => {
         try{
-            const dbQuery = `delete from meal_food where meal_id = $1 and food_id = $2`;
+            let dbQuery = `delete from meal_food where meal_id = $1 and food_id = $2 returning amount`;
             const result = await db.query(dbQuery, [meal_id, food_id]);
             
             if (result.rowCount === 0) {
                 return false;
             }
+            
+            let dbMeal = await this.getMealById(meal_id);
+            dbMeal = dbMeal[0];
+            let food = await Food.getFoodsByIds([food_id]);
+            food = food[0];
+            const amount = result.rows[0].amount;
+            const calories = dbMeal.calories - (food.calories * amount); 
+            const fat = dbMeal.fat - (food.fat * amount); 
+            const carbohydrates = dbMeal.carbohydrates - (food.carbohydrates * amount); 
+            const sodium = dbMeal.sodium - (food.sodium * amount);
+            const fiber = dbMeal.fiber - (food.fiber * amount);
+            const protein = dbMeal.protein - (food.protein * amount);
+            dbMeal.calories -= calories; 
+            dbMeal.fat -= fat;
+            dbMeal.carbohydrates -= carbohydrates; 
+            dbMeal.sodium -= sodium;
+            dbMeal.fiber -= fiber;
+            dbMeal.protein -= protein; 
 
-            return true;
+            dbQuery = `
+                update meal set calories = ${dbMeal.calories}, fat = ${dbMeal.fat}, 
+                carbohydrates = ${dbMeal.carbohydrates}, sodium = ${dbMeal.sodium}, fiber = ${dbMeal.fiber}, 
+                protein = ${dbMeal.protein} where meal_id = ${meal_id}
+            `;
+
+            await db.query(dbQuery);
+            return dbMeal;
         }catch(e) {
             console.error("Erro ao deletar alimento" + e);
             throw new Error("Erro ao deletar alimento.");
