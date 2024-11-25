@@ -104,8 +104,12 @@ class User {
     
     static setCalories = async (user_id, operation, calories) => {
         try{
-            let dbQuery = `update user_date where user_id = $1 set calories_consumed = calories_consumed $2 $3`;
-            const user = await db.query(dbQuery, [user_id, operation, calories]);
+            let dbQuery = `
+                update user_data set 
+                    calories_consumed = calories_consumed ${operation} ${calories} 
+                where user_id = ${user_id}
+            `;
+            const user = await db.query(dbQuery);
             return user.rows;
         }catch(error) {
             console.error("Erro ao atualizar usuário " + error);

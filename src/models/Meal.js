@@ -68,9 +68,9 @@ class Meal {
                 values = [meal_id, food.food_id, food.amount]
                 await db.query(dbQuery, values);
             };
-            const today = new Date().toISOString().split('T')[0];
-            const startDate = new Date(meal.start_date).toISOString().split('T')[0];
-            const endDate = new Date(meal.end_date).toISOString().split('T')[0];
+            const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+            const startDate = meal.start_date;
+            const endDate = meal.end_date;
             const operation = "+";
             if (startDate <= today && endDate >= today) await User.setCalories(meal.user_id, operation, calories);
 
@@ -107,15 +107,15 @@ class Meal {
             // if(dbMeal.fiber !== fiber) dbQuery += `, fiber = ${fiber}`;
             // if(dbMeal.protein !== protein) dbQuery += `, protein = '${protein}'`;
             
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
             const oldStartDate = new Date(dbMeal.start_date).toISOString().split('T')[0];
             const oldEndDate = new Date(dbMeal.end_date).toISOString().split('T')[0];
             const newStartDate = new Date(meal.start_date).toISOString().split('T')[0];
             const newEndDate = new Date(meal.end).toISOString().split('T')[0];
-            if(oldStartDate <= today && oldEndDate >= today && !(newStartDate <= today && newEndDate >= today)) {
-                const operation = "-";
-                await User.setCalories(meal.user_id, operation, dbMeal.calories);
-            }
+            // if(oldStartDate <= today && oldEndDate >= today && !(newStartDate <= today && newEndDate >= today)) {
+            const operation = "-";
+            await User.setCalories(meal.user_id, operation, dbMeal.calories);
+            // }
 
             dbQuery += ` where meal_id = ${meal.meal_id}`; 
 
@@ -141,7 +141,7 @@ class Meal {
     
     static deleteMeal = async (meal_id) => {
         try{
-            const dbQuery = `delete from meal where meal_id = $1 returning calories, start_date`;
+            const dbQuery = `delete from meal where meal_id = $1 returning calories, start_date, end_date`;
             const result = await db.query(dbQuery, [meal_id]);
             
             if (result.rowCount === 0) {
@@ -149,12 +149,13 @@ class Meal {
             }
             
             const meal = result.rows[0];
-            const today = new Date().toISOString().split('T')[0];
-            const startDate = new Date(meal.start_date).toISOString().split('T')[0];
-            const endDate = new Date(meal.end_date).toISOString().split('T')[0];
+            // const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+            // const startDate = meal.start_date;
+            // const endDate = meal.end_date;
             const operation = "-";
-            if (startDate <= today && endDate >= today) await User.setCalories(meal.user_id, operation, meal.calories);
-
+            // if (startDate <= today && endDate >= today) await User.setCalories(meal.user_id, operation, meal.calories);
+            await User.setCalories(meal.user_id, operation, meal.calories);
+            
             return true;
         }catch(e) {
             console.error("Erro ao deletar refeição" + e);
@@ -197,13 +198,13 @@ class Meal {
 
             await db.query(dbQuery);
 
-            const today = new Date().toISOString().split('T')[0];
-            const startDate = new Date(meal.start_date).toISOString().split('T')[0];
-            const endDate = new Date(meal.end_date).toISOString().split('T')[0];
-            if (startDate <= today && endDate >= today) {
-                const operation = "-";
-                await User.setCalories(dbMeal.user_id, operation, food.calories);
-            } 
+            // const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+            // const startDate = dbMeal.start_date;
+            // const endDate = dbMeal.end_date;
+            // if (startDate <= today && endDate >= today) {
+            const operation = "-";
+            await User.setCalories(dbMeal.user_id, operation, food.calories);
+            // } 
 
             return dbMeal;
         }catch(e) {
