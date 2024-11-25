@@ -1,5 +1,6 @@
 import db from "../config/db.js";
-import Food from "../models/Food.js";
+import Food from "./Food.js";
+import User from "./User.js";
 
 class Meal {
     constructor(meal_id, name, date, user_id, calories, fat, carbohydrates, sodium, fiber, protein) {
@@ -48,7 +49,7 @@ class Meal {
                 fiber += Number(food.fiber);
                 protein += Number(food.protein);
             });
-            let dbQuery = `
+            dbQuery = `
                 insert into meal 
                     (name, start_date, end_date, user_id, calories, fat, carbohydrates, sodium, fiber, protein) 
                 values 
@@ -67,6 +68,12 @@ class Meal {
                 values = [meal_id, food.food_id, food.amount]
                 await db.query(dbQuery, values);
             };
+            const today = new Date().toISOString().split('T')[0];
+            const startDate = new Date(meal.start_date).toISOString().split('T')[0];
+            const endDate = new Date(meal.end_date).toISOString().split('T')[0];
+            const operation = "+";
+            if (startDate <= today && endDate >= today) await User.setCalories(meal.user_id, operation, calories);
+
             return { meal_id: meal_id, message: "Refeição inserida com sucesso!" };
         } catch (error) {
             console.error("Erro ao inserir a refeição:", error);
@@ -76,45 +83,56 @@ class Meal {
     
     static update = async (meal) => {
         try{
-            let calories = 0, fat = 0, carbohydrates = 0, sodium = 0, fiber = 0, protein = 0;
-            meal.foods.forEach(food => {
-                calories += food.calories;
-                fat += food.fat;
-                carbohydrates += food.carbohydrates;
-                sodium += food.sodium;
-                fiber += food.fiber;
-                protein += food.protein;
-            });
-            let dbQuery = `select * from meal where meal_id = '${meal.meal_id}'`;
-            const dbMeal = await db.query(dbQuery);
+            // let calories = 0, fat = 0, carbohydrates = 0, sodium = 0, fiber = 0, protein = 0;
+            // meal.foods.forEach(food => {
+            //     calories += food.calories;
+            //     fat += food.fat;
+            //     carbohydrates += food.carbohydrates;
+            //     sodium += food.sodium;
+            //     fiber += food.fiber;
+            //     protein += food.protein;
+            // });
+            let dbQuery = `select * from meal where meal_id = $1`;
+            const dbMeal = await db.query(dbQuery, [meal.meal_id]);
             dbQuery = `update meal set `;
 
             if(meal.name && dbMeal.name !== meal.name) dbQuery += `name = '${meal.name}'`; 
-            if(meal.start_date && dbMeal.start_date !== meal.start_date) dbQuery += `, set start_date = '${meal.start_date}'`;
+            if(meal.start_date && dbMeal.start_date !== meal.start_date) 
+                dbQuery += `, set start_date = '${meal.start_date}'`;
             if(meal.end_date && dbMeal.end_date !== meal.end_date) dbQuery += `, end_date = '${meal.end_date}'`; 
-            if(dbMeal.calories !== calories) dbQuery += `, calories = ${calories}`;
-            if(dbMeal.fat !== fat) dbQuery += `, fat = ${fat}`;
-            if(dbMeal.carbohydrates !== carbohydrates) dbQuery += `, carbohydrates = ${carbohydrates}`;
-            if(dbMeal.sodium !== sodium) dbQuery += `, sodium = ${sodium}`;
-            if(dbMeal.fiber !== fiber) dbQuery += `, fiber = ${fiber}`;
-            if(dbMeal.protein !== protein) dbQuery += `, protein = '${protein}'`;
+            // if(dbMeal.calories !== calories) dbQuery += `, calories = ${calories}`;
+            // if(dbMeal.fat !== fat) dbQuery += `, fat = ${fat}`;
+            // if(dbMeal.carbohydrates !== carbohydrates) dbQuery += `, carbohydrates = ${carbohydrates}`;
+            // if(dbMeal.sodium !== sodium) dbQuery += `, sodium = ${sodium}`;
+            // if(dbMeal.fiber !== fiber) dbQuery += `, fiber = ${fiber}`;
+            // if(dbMeal.protein !== protein) dbQuery += `, protein = '${protein}'`;
             
-            dbQuery += ` where meal_id = '${meal.meal_id}'`; 
+            const today = new Date().toISOString().split('T')[0];
+            const oldStartDate = new Date(dbMeal.start_date).toISOString().split('T')[0];
+            const oldEndDate = new Date(dbMeal.end_date).toISOString().split('T')[0];
+            const newStartDate = new Date(meal.start_date).toISOString().split('T')[0];
+            const newEndDate = new Date(meal.end).toISOString().split('T')[0];
+            if(oldStartDate <= today && oldEndDate >= today && !(newStartDate <= today && newEndDate >= today)) {
+                const operation = "-";
+                await User.setCalories(meal.user_id, operation, dbMeal.calories);
+            }
+
+            dbQuery += ` where meal_id = ${meal.meal_id}`; 
 
             await db.query(dbQuery);
             
-            dbQuery = `update meal_food where meal_id = '${1}' and food_id = ${2} set amount = ${3}`;
-            for(const food of meal.foods) {
-                const foodQuery = `select amount from meal_food where meal_id = ${1} and food_id = '${2}'`;
-                let values = [meal_id, food_id];
-                const foodAmount = await db.query(dbQuery, values);
-                const amount = foodAmount.rows[0].amount;
-                if(food.amound !== amount) {
-                    values = [meal.meal_id, food.food_id, food.amount]
-                    await db.query(dbQuery, values);
-                }
-            };
-            return { meal_id: meal_id, message: "Refeição inserida com sucesso!" };
+            // dbQuery = `update meal_food where meal_id = '${1}' and food_id = ${2} set amount = ${3}`;
+            // for(const food of meal.foods) {
+            //     const foodQuery = `select amount from meal_food where meal_id = ${1} and food_id = '${2}'`;
+            //     let values = [meal_id, food_id];
+            //     const foodAmount = await db.query(foodQuery, values);
+            //     const amount = foodAmount.rows[0].amount;
+            //     if(food.amound !== amount) {
+            //         values = [meal.meal_id, food.food_id, food.amount]
+            //         await db.query(dbQuery, values);
+            //     }
+            // };
+            return { meal_id: meal.meal_id, message: "Refeição inserida com sucesso!" };
         } catch (error) {
             console.error("Erro ao inserir a refeição:", error);
             throw new Error("Erro ao cadastrar a refeição.");
@@ -123,12 +141,19 @@ class Meal {
     
     static deleteMeal = async (meal_id) => {
         try{
-            const dbQuery = `delete from meal where meal_id = $1`;
+            const dbQuery = `delete from meal where meal_id = $1 returning calories, start_date`;
             const result = await db.query(dbQuery, [meal_id]);
             
             if (result.rowCount === 0) {
                 return false;
             }
+            
+            const meal = result.rows[0];
+            const today = new Date().toISOString().split('T')[0];
+            const startDate = new Date(meal.start_date).toISOString().split('T')[0];
+            const endDate = new Date(meal.end_date).toISOString().split('T')[0];
+            const operation = "-";
+            if (startDate <= today && endDate >= today) await User.setCalories(meal.user_id, operation, meal.calories);
 
             return true;
         }catch(e) {
@@ -171,6 +196,15 @@ class Meal {
             `;
 
             await db.query(dbQuery);
+
+            const today = new Date().toISOString().split('T')[0];
+            const startDate = new Date(meal.start_date).toISOString().split('T')[0];
+            const endDate = new Date(meal.end_date).toISOString().split('T')[0];
+            if (startDate <= today && endDate >= today) {
+                const operation = "-";
+                await User.setCalories(dbMeal.user_id, operation, food.calories);
+            } 
+
             return dbMeal;
         }catch(e) {
             console.error("Erro ao deletar alimento" + e);

@@ -50,7 +50,6 @@ class User {
 
     static insert = async (user) => {
         try{
-            console.log(JSON.stringify(user));
             user.bmi = user.bmi || (user.weight / (user.height * user.height));
             if(!user.calories_consumed) user.calories_consumed = 0;
             if(!user.calorie_goal) user.calorie_goal = this.getCalorieGoal(user);
@@ -72,12 +71,10 @@ class User {
     
     static update = async (user) => {
         try{
-            console.log(JSON.stringify(user));
             user.bmi = user.bmi;
             if(!user.calories_consumed) user.calories_consumed = 0;
             if(!user.calorie_goal) user.calorie_goal = this.getCalorieGoal(user);
             const bmiCategory = this.getCategory(user.bmi);
-            console.log("user ", JSON.stringify(user));
             
             let dbQuery = `select * from user_data where mail = '${user.mail}'`;
             const dbUser = await db.query(dbQuery);
@@ -100,6 +97,16 @@ class User {
             dbQuery += ` where mail = '${user.mail}'`; 
             user = await db.query(dbQuery);
             return user;
+        }catch(error) {
+            console.error("Erro ao atualizar usuário " + error);
+        }
+    }
+    
+    static setCalories = async (user_id, operation, calories) => {
+        try{
+            let dbQuery = `update user_date where user_id = $1 set calories_consumed = calories_consumed $2 $3`;
+            const user = await db.query(dbQuery, [user_id, operation, calories]);
+            return user.rows;
         }catch(error) {
             console.error("Erro ao atualizar usuário " + error);
         }
