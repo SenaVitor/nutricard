@@ -18,7 +18,7 @@ class Food {
             let dbQuery = `select * from food where name like '${params.query}%'`; 
             if(params.sort) dbQuery += ` order by ${params.sort}`;
             if(params.sortDirection) dbQuery += ` ${params.sortDirection}`;
-            dbQuery += ` limit ${params.number}`;
+            // dbQuery += ` limit ${params.number}`;
             console.log(dbQuery)
             const food = await db.query(dbQuery);
             // console.log("food " + JSON.stringify(food));
