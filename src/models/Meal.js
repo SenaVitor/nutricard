@@ -107,11 +107,11 @@ class Meal {
             // if(dbMeal.fiber !== fiber) dbQuery += `, fiber = ${fiber}`;
             // if(dbMeal.protein !== protein) dbQuery += `, protein = '${protein}'`;
             
-            const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
-            const oldStartDate = new Date(dbMeal.start_date).toISOString().split('T')[0];
-            const oldEndDate = new Date(dbMeal.end_date).toISOString().split('T')[0];
-            const newStartDate = new Date(meal.start_date).toISOString().split('T')[0];
-            const newEndDate = new Date(meal.end).toISOString().split('T')[0];
+            // const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+            // const oldStartDate = new Date(dbMeal.start_date).toISOString().split('T')[0];
+            // const oldEndDate = new Date(dbMeal.end_date).toISOString().split('T')[0];
+            // const newStartDate = new Date(meal.start_date).toISOString().split('T')[0];
+            // const newEndDate = new Date(meal.end).toISOString().split('T')[0];
             // if(oldStartDate <= today && oldEndDate >= today && !(newStartDate <= today && newEndDate >= today)) {
             const operation = "-";
             await User.setCalories(meal.user_id, operation, dbMeal.calories);
@@ -141,7 +141,7 @@ class Meal {
     
     static deleteMeal = async (meal_id) => {
         try{
-            const dbQuery = `delete from meal where meal_id = $1 returning calories, start_date, end_date`;
+            const dbQuery = `delete from meal where meal_id = $1 returning calories, start_date, end_date, user_id`;
             const result = await db.query(dbQuery, [meal_id]);
             
             if (result.rowCount === 0) {

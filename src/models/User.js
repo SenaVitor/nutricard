@@ -71,28 +71,54 @@ class User {
     
     static update = async (user) => {
         try{
-            user.bmi = user.bmi;
-            if(!user.calories_consumed) user.calories_consumed = 0;
-            if(!user.calorie_goal) user.calorie_goal = this.getCalorieGoal(user);
-            const bmiCategory = this.getCategory(user.bmi);
+            let bmiCategory;
+            if(user.bmi) {
+                bmiCategory = this.getCategory(user.bmi);
+            }
+            if(user.calories_consumed && user.calories_consumed < 0) user.calories_consumed = 0;
+            // if(!user.calorie_goal) user.calorie_goal = this.getCalorieGoal(user);
             
             let dbQuery = `select * from user_data where mail = '${user.mail}'`;
             const dbUser = await db.query(dbQuery);
-            dbQuery = `update user_data set `;
+            dbQuery = `update user_data set`;
 
-            if(user.name && dbUser.name !== user.name) dbQuery += `name = '${user.name}'`; 
-            if(user.newMail && dbUser.mail !== user.newMail) dbQuery += `, set mail = '${user.newMail}'`;
-            if(user.password && dbUser.password !== user.password) dbQuery += `, password = '${user.password}'`; 
-            if(user.height && dbUser.height !== user.height) dbQuery += `, height = ${user.height}`;
-            if(user.weight && dbUser.weight !== user.weight) dbQuery += `, weight = ${user.weight}`;
-            if(user.calorie_goal && dbUser.calorie_goal !== user.calorie_goal) 
-                dbQuery += `, calorie_goal = ${user.calorie_goal}`;
-            if(user.calories_consumed && dbUser.calories_consumed !== user.calories_consumed) 
-                dbQuery += `, calories_consumed = ${user.calories_consumed}`;
-            if(user.bmi && dbUser.bmi !== user.bmi) dbQuery += `, bmi = ${user.bmi}`;
-            if(user.bmiCategory && dbUser.bmiCategory !== user.bmiCategory) 
-                dbQuery += `, bmiCategory = '${bmiCategory}'`;
-            if(user.gender && dbUser.gender !== user.gender) dbQuery += `, gender = '${user.gender}'`;
+            if(user.name && dbUser.name !== user.name) dbQuery += ` name = '${user.name}'`; 
+            if(user.newMail && dbUser.mail !== user.newMail) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` mail = '${user.newMail}'`;
+            }
+            if(user.password && dbUser.password !== user.password) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` password = '${user.password}'`; 
+            }
+            if(user.height && dbUser.height !== user.height) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` height = ${user.height}`;
+            }
+            if(user.weight && dbUser.weight !== user.weight) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` weight = ${user.weight}`;
+            }
+            if(user.calorie_goal && dbUser.calorie_goal !== user.calorie_goal) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` calorie_goal = ${user.calorie_goal}`;
+            } 
+            if(user.calories_consumed && dbUser.calories_consumed !== user.calories_consumed) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` calories_consumed = ${user.calories_consumed}`;
+            } 
+            if(user.bmi && dbUser.bmi !== user.bmi) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` bmi = ${user.bmi}`;
+            }
+            if(user.bmi && bmiCategory && dbUser.bmiCategory !== bmiCategory) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` bmiCategory = '${bmiCategory}'`;
+            }
+            if(user.gender && dbUser.gender !== user.gender) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` gender = '${user.gender}'`;
+            }
             
             dbQuery += ` where mail = '${user.mail}'`; 
             user = await db.query(dbQuery);
