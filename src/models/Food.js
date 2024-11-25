@@ -16,9 +16,9 @@ class Food {
     static getFood = async (params) => {
         try{
             let dbQuery = `select * from food where name like '${params.query}%'`; 
-            if(params.sort) dbQuery += ` order by ${params.sort}`;
-            if(params.sortDirection) dbQuery += ` ${params.sortDirection}`;
-            // dbQuery += ` limit ${params.number}`;
+            if(params.sort) dbQuery += ` order by name`;
+            // if(params.sortDirection) dbQuery += ` ${params.sortDirection}`;
+            dbQuery += ` limit 10`;
             console.log(dbQuery)
             const food = await db.query(dbQuery);
             // console.log("food " + JSON.stringify(food));
@@ -109,7 +109,9 @@ class Food {
 
     static getNutrient = (food, name) => {
         try{
-            return food.nutrition.nutrients.find(nutrient => nutrient.name === name).amount;
+            const weightPerGram = food.nutrition.weightPerServing.amount;
+            const amount = food.nutrition.nutrients.find(nutrient => nutrient.name === name).amount;
+            return amount ? (amount / weightPerGram) : 0;
         }catch(error){
             console.error(`Erro ao acessar o nutriente ${name} do alimento ${food.name}: ${error}`);
             return 0;
