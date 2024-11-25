@@ -15,7 +15,7 @@ class Food {
     
     static getFood = async (params) => {
         try{
-            let dbQuery = `select * from food where name like '%${params.query}%'`; 
+            let dbQuery = `select * from food where name like '${params.query}%'`; 
             if(params.sort) dbQuery += ` order by ${params.sort}`;
             if(params.sortDirection) dbQuery += ` ${params.sortDirection}`;
             dbQuery += ` limit ${params.number}`;
