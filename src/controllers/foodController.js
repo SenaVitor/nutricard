@@ -101,7 +101,7 @@ class FoodController {
         try {
             const foods = await Food.getFavoritedFood(user_id);
 
-            if (foods) {
+            if (foods && foods.length > 0) {
                 res.status(200).json(foods);
             } else if(foods.length === 0){
                 res.status(204).json({ message: "Nenhum alimento favoritado!" });

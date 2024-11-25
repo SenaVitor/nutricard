@@ -72,10 +72,10 @@ class Food {
                     food.calories, food.fat, food.carbohydrates, food.sodium, food.fiber, food.protein
                 FROM favorite_food
                 JOIN food ON favorite_food.food_id = food.food_id
-                WHERE favorite_food.user_id = $1
+                WHERE favorite_food.user_id = ${user_id}
             `;
 
-            const foods = await db.query(dbQuery, [user_id]);
+            const foods = await db.query(dbQuery);
             return foods.rows;
         }catch(e) {
             throw new Error(e);
