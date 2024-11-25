@@ -146,11 +146,17 @@ class FoodController {
         }
     };
 
-    static insertFavoriteFood = async (food_id, user_id) => {
-        try {
-            return await Food.insertFavoriteFood(food_id, user_id);
+    static insertFavoriteFood = async (req, res) => {
+        try {    
+            const { food_id, user_id } = req.body;
+            const result = await Food.insertFavoriteFood(food_id, user_id);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(400).json({ message: "food_id ou user_id inválidos" });
+            }
         } catch (error) {
-            return `Erro ao favoritar alimento: ${error.message}`;
+            res.status(500).json({ message: `Erro ao favoritar alimento: ${error.message}` });
         }
     };    
 

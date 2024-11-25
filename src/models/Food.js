@@ -66,7 +66,15 @@ class Food {
     
     static getFavoritedFood = async (user_id) => {
         try{
-            const dbQuery = `select * from favorite_food where user_id = $1`;
+            const dbQuery = `
+                SELECT 
+                    favorite_food.user_id, favorite_food.food_id, food.name, food.unit_of_measure, food.image, 
+                    food.calories, food.fat, food.carbohydrates, food.sodium, food.fiber, food.protein
+                FROM favorite_food
+                JOIN food ON favorite_food.food_id = food.food_id
+                WHERE favorite_food.user_id = $1
+            `;
+
             const foods = await db.query(dbQuery, [user_id]);
             return foods.rows;
         }catch(e) {
@@ -94,6 +102,7 @@ class Food {
             await db.query(dbQuery, [food_id, user_id]);
             return 'Alimento favoritado com sucesso!';
         } catch (error) {
+            console.error(error);
             throw new Error(error.message);
         }
     }
