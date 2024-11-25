@@ -7,5 +7,7 @@ router
     .get("/food", FoodController.listFood)
     .get("/food/:id", FoodController.listFoodById)
     .get("/food/meal/:id", FoodController.listFoodByMeal)
+    .get("/food/favorites/:id", FoodController.listFavoritesFood)
+    .post("/food/favorites", FoodController.insertFavoriteFood)
 
 export default router;

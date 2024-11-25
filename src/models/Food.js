@@ -63,6 +63,17 @@ class Food {
         }
     }
 
+    
+    static getFavoritedFood = async (user_id) => {
+        try{
+            const dbQuery = `select * from favorite_food where user_id = $1`;
+            const foods = await db.query(dbQuery, [user_id]);
+            return foods.rows;
+        }catch(e) {
+            throw new Error(e);
+        }
+    }
+
     static insert = async (food) => {
         const dbQuery = `
             insert into food 
@@ -75,6 +86,16 @@ class Food {
         `;
         await db.query(dbQuery);
         return 'Alimento criado com sucesso!';
+    }
+
+    static insertFavoriteFood = async (food_id, user_id) => {
+        try {
+            const dbQuery = `insert into favorite_food (food_id, user_id) values ($1, $2)`;
+            await db.query(dbQuery, [food_id, user_id]);
+            return 'Alimento favoritado com sucesso!';
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 
     static getNutrient = (food, name) => {

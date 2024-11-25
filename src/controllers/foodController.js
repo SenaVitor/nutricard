@@ -90,6 +90,28 @@ class FoodController {
             res.status(500).json({ message: "Erro ao buscar alimento", error: error.message });
         }
     }
+    
+    static listFavoritesFood = async (req, res) => {
+        const { user_id } = req.params;
+        
+        if (isNaN(user_id)) {
+            return res.status(400).json({ message: "user_id deve ser um número." });
+        }
+
+        try {
+            const foods = await Food.getFavoritedFood(user_id);
+
+            if (foods) {
+                res.status(200).json(foods);
+            } else if(foods.length === 0){
+                res.status(204).json({ message: "Nenhum alimento favoritado!" });
+            } else {
+                res.status(404).json({ message: "Usuário não cadastrado!" });
+            }
+        } catch (error) {
+            res.status(500).json({ message: "Erro ao buscar alimentos favoritados", error: error.message });
+        }
+    }
 
     static fetchDetailedFoods = async (foodIds, amount) => {
         try {
@@ -123,7 +145,14 @@ class FoodController {
             return `Erro ao cadastrar alimentos: ${error.message}`;
         }
     };
-    
+
+    static insertFavoriteFood = async (food_id, user_id) => {
+        try {
+            return await Food.insertFavoriteFood(food_id, user_id);
+        } catch (error) {
+            return `Erro ao favoritar alimento: ${error.message}`;
+        }
+    };    
 
 }
 
