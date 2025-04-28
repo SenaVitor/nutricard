@@ -37,12 +37,31 @@ class Meal {
             console.error("Erro " + e);
         }
     }
+    
+    static getFavoriteMeals = async (user_id) => {
+        try{
+            const dbQuery = `
+                SELECT 
+                    m.meal_id, m.name AS meal_name, m.start_date, m.end_date, m.calories, 
+                    m.fat, m.carbohydrates, m.sodium, m.fiber, m.protein
+                FROM favorite_meals fm
+                JOIN meal m ON fm.meal_id = m.meal_id
+                WHERE fm.user_id = $1
+            `;
 
+            const meals = await db.query(dbQuery, [user_id]);
+            console.log(JSON.stringify(dbQuery));
+            return meals.rows;
+        }catch(e) {
+            throw new Error(e);
+        }
+    }
+    
     static create = async (meal) => {
         try{
             let calories = 0, fat = 0, carbohydrates = 0, sodium = 0, fiber = 0, protein = 0;
             meal.foods.forEach(food => {
-                calories += Number(food.calories);
+                calories += Number(food.calories) * Number(food.amount);
                 fat += Number(food.fat);
                 carbohydrates += Number(food.carbohydrates);
                 sodium += Number(food.sodium);
@@ -177,18 +196,14 @@ class Meal {
             let food = await Food.getFoodsByIds([food_id]);
             food = food[0];
             const amount = result.rows[0].amount;
-            const calories = dbMeal.calories - (food.calories * amount); 
-            const fat = dbMeal.fat - (food.fat * amount); 
-            const carbohydrates = dbMeal.carbohydrates - (food.carbohydrates * amount); 
-            const sodium = dbMeal.sodium - (food.sodium * amount);
-            const fiber = dbMeal.fiber - (food.fiber * amount);
-            const protein = dbMeal.protein - (food.protein * amount);
-            dbMeal.calories -= calories; 
-            dbMeal.fat -= fat;
-            dbMeal.carbohydrates -= carbohydrates; 
-            dbMeal.sodium -= sodium;
-            dbMeal.fiber -= fiber;
-            dbMeal.protein -= protein; 
+            dbMeal.calories = dbMeal.calories - (food.calories * amount); 
+            dbMeal.fat = dbMeal.fat - (food.fat * amount); 
+            dbMeal.carbohydrates = dbMeal.carbohydrates - (food.carbohydrates * amount); 
+            dbMeal.sodium = dbMeal.sodium - (food.sodium * amount);
+            dbMeal.fiber = dbMeal.fiber - (food.fiber * amount);
+            dbMeal.protein = dbMeal.protein - (food.protein * amount);
+
+            console.log("Calorias pós delete " + dbMeal.calories);
 
             dbQuery = `
                 update meal set calories = ${dbMeal.calories}, fat = ${dbMeal.fat}, 
@@ -198,18 +213,32 @@ class Meal {
 
             await db.query(dbQuery);
 
-            // const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
-            // const startDate = dbMeal.start_date;
-            // const endDate = dbMeal.end_date;
-            // if (startDate <= today && endDate >= today) {
-            const operation = "-";
-            await User.setCalories(dbMeal.user_id, operation, food.calories);
-            // } 
+            const today = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+            const startDate = dbMeal.start_date;
+            const endDate = dbMeal.end_date;
+            today.setHours(0, 0, 0, 0);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+            if (startDate <= today && endDate >= today) {
+                const operation = "-";
+                await User.setCalories(dbMeal.user_id, operation, food.calories);
+            } 
 
             return dbMeal;
         }catch(e) {
             console.error("Erro ao deletar alimento" + e);
             throw new Error("Erro ao deletar alimento.");
+        }
+    }
+    
+    static insertFavoriteMeal = async (meal_id, user_id) => {
+        try {
+            const dbQuery = `insert into favorite_meals (meal_id, user_id) values ($1, $2)`;
+            await db.query(dbQuery, [meal_id, user_id]);
+            return 'Alimento favoritado com sucesso!';
+        } catch (error) {
+            console.error(error);
+            throw new Error(error.message);
         }
     }
 

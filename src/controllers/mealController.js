@@ -20,6 +20,28 @@ class MealController {
         }
     }
     
+    static listFavoriteMeals = async (req, res) => {
+        const { user_id } = req.params;
+        
+        if (isNaN(user_id)) {
+            return res.status(400).json({ message: "user_id deve ser um número." });
+        }
+
+        try {
+            const meals = await Meal.getFavoriteMeals(user_id);
+
+            if (meals && meals.length > 0) {
+                res.status(200).json(meals);
+            } else if(meals.length === 0){
+                res.status(204).json({ message: "Nenhuma refeição favoritada!" });
+            } else {
+                res.status(404).json({ message: "Usuário não cadastrado!" });
+            }
+        } catch (error) {
+            res.status(500).json({ message: "Erro ao buscar refeições favoritadas", error: error.message });
+        }
+    }
+    
     static insert = async (req, res) => {
         try {
             const { meal } = req.body;
@@ -35,9 +57,23 @@ class MealController {
                 res.status(500).json({ message: "Erro ao cadastrar refeição " + result });
             }
         } catch (error) {
-            return `Erro ao cadastrar refeição: ${error.message}`;
+            return res.status(500).json({ message: `Erro ao cadastrar refeição: ${error.message}` });
         }
     };
+    
+    static insertFavoriteMeal = async (req, res) => {
+        try {    
+            const { meal_id, user_id } = req.body;
+            const result = await Meal.insertFavoriteMeal(meal_id, user_id);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(400).json({ message: "meal_id ou user_id inválidos" });
+            }
+        } catch (error) {
+            res.status(500).json({ message: `Erro ao favoritar refeição: ${error.message}` });
+        }
+    };    
 
     static update = async (req, res) => {
         try {
@@ -54,7 +90,7 @@ class MealController {
                 res.status(500).json({ message: "Erro ao cadastrar refeição " + result });
             }
         } catch (error) {
-            return `Erro ao cadastrar refeição: ${error.message}`;
+            return res.status(500).json({ message: `Erro ao cadastrar refeição: ${error.message}` });
         }
     };
     
