@@ -37,7 +37,7 @@ Este é o backend do projeto **NutriCard**, uma aplicação voltada para o geren
    ```bash
    git clone https://github.com/SenaVitor/nutricard.git
 
-2. Entre na pasta do projeto e execute o npm install
+2. Entre na pasta do projeto
    ```bash
    cd nutricard
 
