@@ -3,6 +3,7 @@
 Este é o backend do projeto **NutriCard**, uma aplicação voltada para o gerenciamento de refeições e informações nutricionais. O objetivo do sistema é permitir que os usuários possam registrar suas refeições, acompanhar os dados nutricionais dos alimentos e monitorar o consumo diário de calorias e nutrientes.
 
 > 🌐 **Confira o repositório do [Frontend Web](https://github.com/lucasMunizt/estagio-2)** para complementar este projeto.
+<br>
 > 📱 **Confira o repositório do [Frontend Mobile](https://github.com/lucasMunizt/MeuApp)** para complementar este projeto.
 
 ---
