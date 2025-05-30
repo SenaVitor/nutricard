@@ -2,7 +2,8 @@
 
 Este é o backend do projeto **NutriCard**, uma aplicação voltada para o gerenciamento de refeições e informações nutricionais. O objetivo do sistema é permitir que os usuários possam registrar suas refeições, acompanhar os dados nutricionais dos alimentos e monitorar o consumo diário de calorias e nutrientes.
 
-> 🚀 **Confira o repositório do [Frontend](https://github.com/lucasMunizt/estagio-2)** para complementar este projeto.
+> 🌐 **Confira o repositório do [Frontend Web](https://github.com/lucasMunizt/estagio-2)** para complementar este projeto.
+> 📱 **Confira o repositório do [Frontend Mobile](https://github.com/lucasMunizt/MeuApp)** para complementar este projeto.
 
 ---
 
@@ -35,4 +36,16 @@ Este é o backend do projeto **NutriCard**, uma aplicação voltada para o geren
 1. Clone o repositório:
    ```bash
    git clone https://github.com/SenaVitor/nutricard.git
+
+2. Entre na pasta do projeto e execute o npm install
+   ```bash
    cd nutricard
+
+3. Instale as dependências
+   ```bash
+   npm install
+
+4. Rode o projeto
+   ```bash
+   npm run dev
+   
