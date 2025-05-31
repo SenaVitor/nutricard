@@ -19,21 +19,6 @@ class MealController {
             res.status(500).json({message: error.message});
         }
     }
-
-    static listMealByName = async (req, res) => {
-        const { name, start_date, end_date } = req.params;
-        
-        try {
-            const result = await Meal.getMealByName(name, start_date, end_date);
-            if (result) {
-                res.status(200).json(result);
-            } else {
-                res.status(400).json({ message: "Refeição não cadastrada!" });
-            }
-        } catch (error) {
-            res.status(500).json({message: error.message});
-        }
-    }
     
     static listFavoriteMeals = async (req, res) => {
         const { user_id } = req.params;

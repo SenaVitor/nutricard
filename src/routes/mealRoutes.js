@@ -5,7 +5,6 @@ const router = express.Router();
 
 router
     .get("/meal/:user_id/:start_date/:end_date", MealController.listMeal)
-    .get("/meal/:name/:start_date/:end_date", MealController.listMealByName)
     .get("/meal/favorites/:user_id", MealController.listFavoriteMeals)
     .post("/meal/favorites", MealController.insertFavoriteMeal)
     .post("/meal/create", MealController.insert)

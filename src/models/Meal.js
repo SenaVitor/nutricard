@@ -27,18 +27,6 @@ class Meal {
             console.error("Erro " + e);
         }
     }
-
-    static getMealByName = async (name, start_date, end_date) => {
-        try{
-            const dbQuery = `select * from meal where name = '${name}' and start_date >= '${start_date}' 
-                and end_date <= '${end_date}'`;
-            console.log(dbQuery);
-            const meal = await db.query(dbQuery);
-            return meal.rows;
-        }catch(e) {
-            console.error("Erro " + e);
-        }
-    }
     
     static getMealById = async (meal_id) => {
         try{
