@@ -72,7 +72,13 @@ CREATE TABLE favorite_food (
     UNIQUE (user_id, food_id)  -- Evita duplicação de favoritos
 );
 
-select * from user_data;	
+select * from user_data;
+
+CREATE TYPE goal_type AS ENUM ('perder peso', 'ganhar massa');
+
+ALTER TABLE user_data
+ADD COLUMN goal goal_type;
+
 select * from food;
 select * from meal;
 select * from meal_food;
