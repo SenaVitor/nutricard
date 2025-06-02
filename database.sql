@@ -77,7 +77,7 @@ select * from user_data;
 CREATE TYPE goal_type AS ENUM ('perder peso', 'ganhar massa');
 
 ALTER TABLE user_data
-ADD COLUMN goal goal_type;
+ADD COLUMN goal TYPE VARCHAR(15);
 
 select * from food;
 select * from meal;
