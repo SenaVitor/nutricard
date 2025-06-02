@@ -50,17 +50,17 @@ class User {
 
     static insert = async (user) => {
         try{
-            user.bmi = user.bmi || (user.weight / (user.height * user.height));
+            user.bmi = user.bmi > 0 ? user.bmi : (user.weight / (user.height * user.height));
+            if(!user.goal) user.goal = "perder peso";
             if(!user.calories_consumed) user.calories_consumed = 0;
-            if(!user.calorie_goal) user.calorie_goal = this.getCalorieGoal(user);
+            if(!user.calorie_goal) user.calorie_goal = this.getCalorieGoal(user) || 0;
             const bmiCategory = this.getCategory(user.bmi);
-            console.log("user ", JSON.stringify(user));
             const dbQuery = `
                 insert into user_data 
-                    (name, mail, password, height, weight, calorie_goal, calories_consumed, bmi, bmiCategory, gender)
+                    (name, mail, password, height, weight, calorie_goal, calories_consumed, bmi, bmiCategory, gender, goal)
                 values 
-                    ('${user.name}', '${user.mail}', '${user.password}', ${user.height}, ${user.weight}, 
-                    ${user.calorie_goal}, ${user.calories_consumed}, ${user.bmi}, '${bmiCategory}', '${user.gender}')
+                    ('${user.name}', '${user.mail}', '${user.password}', ${user.height}, ${user.weight}, ${user.calorie_goal}, 
+                    ${user.calories_consumed}, ${user.bmi}, '${bmiCategory}', '${user.gender}', '${user.goal}')
             `;
             await db.query(dbQuery);
             return 'Usuário criado com sucesso!';
@@ -71,10 +71,9 @@ class User {
     
     static update = async (user) => {
         try{
+            console.log("atualizar ", user);
             let bmiCategory;
-            if(user.bmi) {
-                bmiCategory = this.getCategory(user.bmi);
-            }
+            let updateBMI = false;
             if(user.calories_consumed && user.calories_consumed < 0) user.calories_consumed = 0;
             // if(!user.calorie_goal) user.calorie_goal = this.getCalorieGoal(user);
             
@@ -94,10 +93,12 @@ class User {
             if(user.height && dbUser.height !== user.height) {
                 if(dbQuery !== `update user_data set`) dbQuery += ',';
                 dbQuery += ` height = ${user.height}`;
+                updateBMI = true;
             }
             if(user.weight && dbUser.weight !== user.weight) {
                 if(dbQuery !== `update user_data set`) dbQuery += ',';
                 dbQuery += ` weight = ${user.weight}`;
+                updateBMI = true;
             }
             if(user.calorie_goal && dbUser.calorie_goal !== user.calorie_goal) {
                 if(dbQuery !== `update user_data set`) dbQuery += ',';
@@ -107,20 +108,28 @@ class User {
                 if(dbQuery !== `update user_data set`) dbQuery += ',';
                 dbQuery += ` calories_consumed = ${user.calories_consumed}`;
             } 
-            if(user.bmi && dbUser.bmi !== user.bmi) {
-                if(dbQuery !== `update user_data set`) dbQuery += ',';
-                dbQuery += ` bmi = ${user.bmi}`;
-            }
-            if(user.bmi && bmiCategory && dbUser.bmiCategory !== bmiCategory) {
-                if(dbQuery !== `update user_data set`) dbQuery += ',';
-                dbQuery += ` bmiCategory = '${bmiCategory}'`;
-            }
             if(user.gender && dbUser.gender !== user.gender) {
                 if(dbQuery !== `update user_data set`) dbQuery += ',';
                 dbQuery += ` gender = '${user.gender}'`;
+            } 
+            if(user.goal && dbUser.goal !== user.goal) {
+                if(dbQuery !== `update user_data set`) dbQuery += ',';
+                dbQuery += ` goal = '${user.goal}'`;
+            }
+            if(updateBMI){
+                const bmi = (user.weight / (user.height * user.height))
+                bmiCategory = this.getCategory(bmi);
+                if(bmi && dbUser.bmi !== bmi) {
+                    if(dbQuery !== `update user_data set`) dbQuery += ',';
+                    dbQuery += ` bmi = ${bmi}`;
+                }
+                if(bmi && bmiCategory && dbUser.bmiCategory !== bmiCategory) {
+                    if(dbQuery !== `update user_data set`) dbQuery += ',';
+                    dbQuery += ` bmiCategory = '${bmiCategory}'`;
+                }
             }
             
-            dbQuery += ` where mail = '${user.mail}'`; 
+            dbQuery += ` where user_id = '${user.user_id}'`; 
             user = await db.query(dbQuery);
             return user;
         }catch(error) {
@@ -133,9 +142,11 @@ class User {
             let dbQuery = `
                 update user_data set 
                     calories_consumed = calories_consumed ${operation} ${calories} 
-                where user_id = ${user_id}
+                where user_id = ${user_id} returning calories_consumed
             `;
+            console.log("calories ", calories);
             const user = await db.query(dbQuery);
+            console.log("user ", user.rows)
             return user.rows;
         }catch(error) {
             console.error("Erro ao atualizar usuário " + error);
