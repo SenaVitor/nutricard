@@ -62,6 +62,7 @@ class User {
                     ('${user.name}', '${user.mail}', '${user.password}', ${user.height}, ${user.weight}, ${user.calorie_goal}, 
                     ${user.calories_consumed}, ${user.bmi}, '${bmiCategory}', '${user.gender}', '${user.goal}')
             `;
+            console.log("dbQuery ", dbQuery);
             await db.query(dbQuery);
             return 'Usuário criado com sucesso!';
         }catch(error) {
@@ -77,8 +78,9 @@ class User {
             if(user.calories_consumed && user.calories_consumed < 0) user.calories_consumed = 0;
             // if(!user.calorie_goal) user.calorie_goal = this.getCalorieGoal(user);
             
-            let dbQuery = `select * from user_data where mail = '${user.mail}'`;
-            const dbUser = await db.query(dbQuery);
+            let dbQuery = `select * from user_data where user_id = ${user.user_id}`;
+            let dbUser = await db.query(dbQuery);
+            dbUser = dbUser.rows[0];
             dbQuery = `update user_data set`;
 
             if(user.name && dbUser.name !== user.name) dbQuery += ` name = '${user.name}'`; 
